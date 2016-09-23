@@ -1,4 +1,4 @@
-package com.science.materialsearch;
+package com.science.materialsearch.utils;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
@@ -11,6 +11,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
+import com.science.materialsearch.MaterialSearchView;
+import com.science.materialsearch.R;
+import com.science.materialsearch.widget.SearchEditText;
+
 /**
  * @author 幸运Science
  * @description
@@ -19,7 +23,7 @@ import android.view.animation.Animation;
  */
 
 public class SearchAnimator {
-    static void fadeIn(View view, int duration) {
+    public static void fadeIn(View view, int duration) {
         Animation anim = new AlphaAnimation(0.0f, 1.0f);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(duration);
@@ -28,7 +32,7 @@ public class SearchAnimator {
         view.setVisibility(View.VISIBLE);
     }
 
-    static void fadeOut(View view, int duration) {
+    public static void fadeOut(View view, int duration) {
         Animation anim = new AlphaAnimation(1.0f, 0.0f);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(duration);
@@ -38,7 +42,7 @@ public class SearchAnimator {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    static void revealOpen(View view, int cx, int duration, Context context, final SearchEditText editText,
+    public static void revealOpen(View view, int cx, int duration, Context context, final SearchEditText editText,
                            final MaterialSearchView.OnOpenCloseListener listener) {
 
         if (cx <= 0) {
@@ -90,7 +94,7 @@ public class SearchAnimator {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    static void revealClose(final View view, int cx, int duration, Context context, final SearchEditText editText,
+    public static void revealClose(final View view, int cx, int duration, Context context, final SearchEditText editText,
                             final MaterialSearchView searchView, final MaterialSearchView.OnOpenCloseListener listener) {
 
         if (cx <= 0) {
@@ -141,7 +145,7 @@ public class SearchAnimator {
         }
     }
 
-    static void fadeOpen(View view, int duration, final SearchEditText editText, final boolean shouldClearOnOpen, final MaterialSearchView.OnOpenCloseListener listener) {
+    public static void fadeOpen(View view, int duration, final SearchEditText editText, final boolean shouldClearOnOpen, final MaterialSearchView.OnOpenCloseListener listener) {
         Animation anim = new AlphaAnimation(0.0f, 1.0f);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(duration);
@@ -170,7 +174,7 @@ public class SearchAnimator {
         view.setVisibility(View.VISIBLE);
     }
 
-    static void fadeClose(final View view, int duration, final SearchEditText editText, final boolean shouldClearOnClose, final MaterialSearchView searchView, final MaterialSearchView.OnOpenCloseListener listener) {
+    public static void fadeClose(final View view, int duration, final SearchEditText editText, final boolean shouldClearOnClose, final MaterialSearchView searchView, final MaterialSearchView.OnOpenCloseListener listener) {
         Animation anim = new AlphaAnimation(1.0f, 0.0f);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(duration);
@@ -201,7 +205,7 @@ public class SearchAnimator {
         view.setVisibility(View.GONE);
     }
 
-    static boolean isRtlLayout(Context context) {
+    public static boolean isRtlLayout(Context context) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
                 context.getResources().getConfiguration()
                         .getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL;

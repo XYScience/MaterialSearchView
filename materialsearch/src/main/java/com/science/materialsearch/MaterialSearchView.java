@@ -22,6 +22,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.science.materialsearch.adapter.SearchAdapter;
+import com.science.materialsearch.bean.SearchItem;
+import com.science.materialsearch.db.SearchHistoryTable;
+import com.science.materialsearch.utils.SearchAnimator;
+import com.science.materialsearch.widget.SearchEditText;
+
 /**
  * @author 幸运Science
  * @description
@@ -43,6 +49,7 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
     protected OnMenuClickListener mOnMenuClickListener = null;
     protected RecyclerView.Adapter mAdapter = null;
     protected RecyclerView mRecyclerView;
+    private SearchHistoryTable mHistoryDatabase;
     protected View mShadowView;
     protected View mDividerView;
     protected CardView mCardView;
@@ -79,6 +86,7 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
     private void initView() {
         LayoutInflater.from(mContext).inflate(R.layout.search_view, this, true);
 
+        mHistoryDatabase = new SearchHistoryTable(mContext);
         mCardView = (CardView) findViewById(R.id.cardView);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_result);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -149,6 +157,11 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
         });
 
         setVersion(VERSION_MENU_ITEM);
+        setAdapter();
+    }
+
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
     }
 
     public void setVersion(int version) {
@@ -164,7 +177,7 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
         }
     }
 
-    private LayoutTransition getRecyclerViewLayoutTransition() {
+    public LayoutTransition getRecyclerViewLayoutTransition() {
         LayoutTransition layoutTransition = new LayoutTransition();
         layoutTransition.setDuration(LAYOUT_TRANSITION_DURATION);
         return layoutTransition;
@@ -189,10 +202,12 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
      * 点击软件盘搜索键
      */
     private void onSubmitQuery() {
+        mRecyclerView.setLayoutTransition(getRecyclerViewLayoutTransition());
         CharSequence query = mEditText.getText();
         if (query != null && TextUtils.getTrimmedLength(query) > 0) {
             if (mOnQueryChangeListener != null) {
                 mOnQueryChangeListener.onQueryTextSubmit(query.toString());
+                mHistoryDatabase.addItem(new SearchItem(query.toString()));
             }
         }
     }
@@ -321,9 +336,11 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
         return mRecyclerView.getAdapter();
     }
 
-    public void setAdapter(RecyclerView.Adapter adapter) {
-        mAdapter = adapter;
+    public SearchAdapter setAdapter() {
+        SearchAdapter searchAdapter = new SearchAdapter(mContext, mRecyclerView);
+        mAdapter = searchAdapter;
         mRecyclerView.setAdapter(mAdapter);
+        return searchAdapter;
     }
 
     public void open() {
@@ -353,9 +370,6 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
 
         }
         if (mVersion == VERSION_TOOLBAR) {
-            if (mEditText.length() > 0) {
-                mEditText.getText().clear();
-            }
             mEditText.clearFocus();
         }
     }
@@ -397,10 +411,15 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if (v == mBackImageView) {
-            close();
+            if (mOnMenuClickListener != null) {
+                mOnMenuClickListener.onMenuClick();
+            } else {
+                close();
+            }
         } else if (v == mEmptyImageView) {
             if (mEditText.length() > 0) {
                 mEditText.getText().clear();
+                mEditText.requestFocus();
             }
         } else if (v == mShadowView) {
             close();

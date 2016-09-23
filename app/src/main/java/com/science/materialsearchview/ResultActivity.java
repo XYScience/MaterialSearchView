@@ -1,28 +1,36 @@
 package com.science.materialsearchview;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 
 import com.science.materialsearch.MaterialSearchView;
 import com.science.materialsearch.adapter.SearchAdapter;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * @author 幸运Science
+ * @description
+ * @email chentushen.science@gmail.com,274240671@qq.com
+ * @data 2016/9/23
+ */
+
+public class ResultActivity extends AppCompatActivity {
 
     private MaterialSearchView materialSearchView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_result);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         materialSearchView = (MaterialSearchView) findViewById(R.id.searchView);
+        materialSearchView.setVersion(MaterialSearchView.VERSION_TOOLBAR);
+        materialSearchView.setTextInput(getIntent().getStringExtra("query"));
         materialSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -31,9 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-                intent.putExtra("query", query);
-                startActivity(intent);
+                Log.e("TAG>>>>>>>>>>", "onQueryTextSubmit:" + query);
                 return true;
             }
         });
@@ -41,24 +47,14 @@ public class MainActivity extends AppCompatActivity {
         searchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, String queryHistory) {
-                Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-                intent.putExtra("query", queryHistory);
-                startActivity(intent);
+                Log.e("TAG>>>>>>>>>>", "onItemClick:" + queryHistory);
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_search) {
-            materialSearchView.open();
-        }
-        return super.onOptionsItemSelected(item);
+        materialSearchView.setOnMenuClickListener(new MaterialSearchView.OnMenuClickListener() {
+            @Override
+            public void onMenuClick() {
+                finish();
+            }
+        });
     }
 }

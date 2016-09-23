@@ -13,6 +13,7 @@
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="4dp">
@@ -43,7 +44,7 @@
                     android:tint="@color/search_light_icon"
                     android:tintMode="multiply" />
 
-                <com.science.materialsearch.SearchEditText
+                <com.science.materialsearch.widget.SearchEditText
                     android:id="@+id/searchEditText_input"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -64,7 +65,7 @@
                     android:windowSoftInputMode="stateAlwaysHidden">
 
                     <requestFocus />
-                </com.science.materialsearch.SearchEditText>
+                </com.science.materialsearch.widget.SearchEditText>
                 <!--
                  android:background="?android:attr/listDivider"
                     @android:color/transparent red

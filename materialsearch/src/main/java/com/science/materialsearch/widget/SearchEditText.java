@@ -1,9 +1,11 @@
-package com.science.materialsearch;
+package com.science.materialsearch.widget;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+
+import com.science.materialsearch.MaterialSearchView;
 
 /**
  * @author 幸运Science
@@ -28,7 +30,7 @@ public class SearchEditText extends AppCompatEditText {
         super(context, attrs, defStyleAttr);
     }
 
-    void setSearchView(MaterialSearchView searchView) {
+    public void setSearchView(MaterialSearchView searchView) {
         mSearchView = searchView;
     }
 
