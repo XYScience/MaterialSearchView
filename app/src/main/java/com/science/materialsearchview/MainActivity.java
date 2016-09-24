@@ -14,6 +14,7 @@ import com.science.materialsearch.adapter.SearchAdapter;
 public class MainActivity extends AppCompatActivity {
 
     private MaterialSearchView materialSearchView;
+    private String strQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,30 +23,42 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         materialSearchView = (MaterialSearchView) findViewById(R.id.searchView);
+        // 设置软键盘搜索键监听
         materialSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
 
+            // 点击软件盘搜索键
             @Override
             public boolean onQueryTextSubmit(String query) {
+                strQuery = query;
                 Intent intent = new Intent(MainActivity.this, ResultActivity.class);
                 intent.putExtra("query", query);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 return true;
             }
         });
-        final SearchAdapter searchAdapter = materialSearchView.setAdapter();
-        searchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
+        // 设置搜索历史列表点击监听
+        materialSearchView.setAdapter(new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, String queryHistory) {
+                strQuery = queryHistory;
                 Intent intent = new Intent(MainActivity.this, ResultActivity.class);
                 intent.putExtra("query", queryHistory);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // 在搜索结果界面清除历史记录后，需要调用onTextChanged，以更新历史界面
+        materialSearchView.onTextChanged(strQuery);
     }
 
     @Override
@@ -57,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_search) {
+            // 开始打开搜索框
             materialSearchView.open();
         }
         return super.onOptionsItemSelected(item);

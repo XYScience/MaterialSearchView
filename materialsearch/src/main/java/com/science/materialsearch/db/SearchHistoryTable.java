@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.science.materialsearch.bean.SearchItem;
 
@@ -19,6 +20,8 @@ import java.util.List;
  */
 
 public class SearchHistoryTable {
+
+    private static String TAG = SearchHistoryTable.class.getSimpleName();
 
     private static int mConnectionCount = 0;
     private final SearchHistoryDbHelper dbHelper;
@@ -49,19 +52,17 @@ public class SearchHistoryTable {
      * @param item
      */
     public void addItem(SearchItem item) {
+        open();
         ContentValues values = new ContentValues();
         if (!checkText(item.getText().toString())) {
             values.put(SearchHistoryDbHelper.SEARCH_HISTORY_COLUMN_TEXT, item.getText().toString());
-            open();
             db.insert(SearchHistoryDbHelper.SEARCH_HISTORY_TABLE, null, values);
-            close();
         } else {
             values.put(SearchHistoryDbHelper.SEARCH_HISTORY_COLUMN_ID, getLastItemId() + 1);
-            open();
             db.update(SearchHistoryDbHelper.SEARCH_HISTORY_TABLE, values, SearchHistoryDbHelper.SEARCH_HISTORY_COLUMN_ID
                     + " = ? ", new String[]{Integer.toString(getItemId(item))});
-            close();
         }
+        close();
     }
 
     /**
@@ -119,8 +120,8 @@ public class SearchHistoryTable {
             hasObject = true;
         }
 
-        cursor.close();
         close();
+        cursor.close();
         return hasObject;
     }
 
@@ -131,15 +132,19 @@ public class SearchHistoryTable {
         String selectQuery = "SELECT * FROM " + SearchHistoryDbHelper.SEARCH_HISTORY_TABLE;
         selectQuery += " ORDER BY " + SearchHistoryDbHelper.SEARCH_HISTORY_COLUMN_ID + " DESC";
 
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                SearchItem item = new SearchItem();
-                item.setText(cursor.getString(1));
-                list.add(item);
-            } while (cursor.moveToNext());
+        if (db != null) {
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    SearchItem item = new SearchItem();
+                    item.setText(cursor.getString(1));
+                    list.add(item);
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+        } else {
+            Log.e(TAG, "getAllItems>>>>>>>>>>>>>>");
         }
-        cursor.close();
         close();
         return list;
     }

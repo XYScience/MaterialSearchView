@@ -38,11 +38,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     protected List<SearchItem> mResultList = new ArrayList<>();
     protected OnItemClickListener mItemClickListeners;
     private Context mContext;
-    private RecyclerView mRecyclerView;
 
-    public SearchAdapter(Context context, RecyclerView recyclerView) {
+    public SearchAdapter(Context context) {
         mContext = context;
-        mRecyclerView = recyclerView;
         mHistoryDatabase = new SearchHistoryTable(context);
         getFilter().filter("");
     }
@@ -207,10 +205,8 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            mHistoryDatabase.clearDatabase();
-            mResultList.clear();
-            mRecyclerView.setLayoutTransition(null);
-            notifyDataSetChanged();
+            mHistoryDatabase.clearDatabase(); // 清除数据库历史记录
+            getFilter().filter(""); // 清除界面历史记录
         }
     }
 

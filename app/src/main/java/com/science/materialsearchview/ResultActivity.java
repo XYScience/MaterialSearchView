@@ -1,11 +1,12 @@
 package com.science.materialsearchview;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.science.materialsearch.MaterialSearchView;
 import com.science.materialsearch.adapter.SearchAdapter;
@@ -28,9 +29,13 @@ public class ResultActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         materialSearchView = (MaterialSearchView) findViewById(R.id.searchView);
+        // 设置搜索样式（默认不显示）：浮于Toolbar上
         materialSearchView.setVersion(MaterialSearchView.VERSION_TOOLBAR);
+        // 设置搜索输入框文字
         materialSearchView.setTextInput(getIntent().getStringExtra("query"));
+        // 设置软键盘搜索键监听
         materialSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -39,22 +44,33 @@ public class ResultActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.e("TAG>>>>>>>>>>", "onQueryTextSubmit:" + query);
+                Toast.makeText(ResultActivity.this, "搜索关键字:" + query, Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
-        final SearchAdapter searchAdapter = materialSearchView.setAdapter();
-        searchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
+        // 设置搜索历史列表点击监听
+        materialSearchView.setAdapter(new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, String queryHistory) {
-                Log.e("TAG>>>>>>>>>>", "onItemClick:" + queryHistory);
+                Toast.makeText(ResultActivity.this, "搜索关键字:" + queryHistory, Toast.LENGTH_SHORT).show();
             }
         });
+        // 设置搜索框左边返回箭头监听
         materialSearchView.setOnMenuClickListener(new MaterialSearchView.OnMenuClickListener() {
             @Override
             public void onMenuClick() {
+                Intent intent = new Intent(ResultActivity.this, MainActivity.class);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(ResultActivity.this, MainActivity.class);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }

@@ -38,7 +38,7 @@ import com.science.materialsearch.widget.SearchEditText;
 public class MaterialSearchView extends FrameLayout implements View.OnClickListener {
 
     public static final int LAYOUT_TRANSITION_DURATION = 200;
-    public static final int ANIMATION_DURATION = 300;
+    public static final int ANIMATION_DURATION = 350;
 
     public static final int VERSION_TOOLBAR = 1000;
     public static final int VERSION_MENU_ITEM = 1001;
@@ -157,11 +157,6 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
         });
 
         setVersion(VERSION_MENU_ITEM);
-        setAdapter();
-    }
-
-    public RecyclerView getRecyclerView() {
-        return mRecyclerView;
     }
 
     public void setVersion(int version) {
@@ -202,7 +197,6 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
      * 点击软件盘搜索键
      */
     private void onSubmitQuery() {
-        mRecyclerView.setLayoutTransition(getRecyclerViewLayoutTransition());
         CharSequence query = mEditText.getText();
         if (query != null && TextUtils.getTrimmedLength(query) > 0) {
             if (mOnQueryChangeListener != null) {
@@ -212,7 +206,12 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
         }
     }
 
-    private void onTextChanged(CharSequence newText) {
+    /**
+     * 在搜索结果界面清除历史记录时，需要在退出结果界面后的Activity调用此方法，以更新此时界面的历史记录
+     *
+     * @param newText
+     */
+    public void onTextChanged(CharSequence newText) {
         CharSequence text = mEditText.getText();
         mUserQuery = text;
         if (mAdapter != null && mAdapter instanceof Filterable) {
@@ -336,11 +335,11 @@ public class MaterialSearchView extends FrameLayout implements View.OnClickListe
         return mRecyclerView.getAdapter();
     }
 
-    public SearchAdapter setAdapter() {
-        SearchAdapter searchAdapter = new SearchAdapter(mContext, mRecyclerView);
+    public void setAdapter(SearchAdapter.OnItemClickListener onItemClickListener) {
+        SearchAdapter searchAdapter = new SearchAdapter(mContext);
         mAdapter = searchAdapter;
         mRecyclerView.setAdapter(mAdapter);
-        return searchAdapter;
+        searchAdapter.setOnItemClickListener(onItemClickListener);
     }
 
     public void open() {
